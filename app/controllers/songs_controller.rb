@@ -1,10 +1,29 @@
+require 'pry'
 class SongsController < ApplicationController
   def index
     @songs = Song.all
+    if params[:artist_id]
+      @artist = Artist.find_by(id: params[:artist_id])
+      if @artist
+        @songs = @artist.songs
+      else  
+        flash[:alert] = "Artist not found"
+        redirect_to artists_path
+      end
+    end
   end
 
   def show
-    @song = Song.find(params[:id])
+    if Song.find_by(id: params[:id])
+      @song = Song.find_by(id: params[:id])
+    else
+      flash[:alert] = "Song not found"
+      if params[:artist_id]
+        redirect_to artist_songs_path
+      else
+        redirect_to songs_path
+      end
+    end
   end
 
   def new
@@ -15,7 +34,7 @@ class SongsController < ApplicationController
     @song = Song.new(song_params)
 
     if @song.save
-      redirect_to @song
+      redirect_to song_path
     else
       render :new
     end
@@ -31,7 +50,7 @@ class SongsController < ApplicationController
     @song.update(song_params)
 
     if @song.save
-      redirect_to @song
+      redirect_to song_path
     else
       render :edit
     end

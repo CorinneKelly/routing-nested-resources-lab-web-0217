@@ -1,3 +1,4 @@
+require 'pry'
 class ArtistsController < ApplicationController
   def index
     @artists = Artist.all
@@ -5,7 +6,23 @@ class ArtistsController < ApplicationController
 
   def show
     @artist = Artist.find(params[:id])
+    if Artist.find_by(id: params[:id])
+      @artist = Artist.find(params[:id])
+    else
+      redirect_to artists_path
+    end
   end
+
+  # def songs_index
+  #   @artist = Artist.find(params[:id])
+  #   @songs = @artist.songs
+  #   render template: 'songs/index'
+  # end
+
+  # def song
+  #   @artist = Artist.find(params[:id])
+  #   render template: 'songs/show'
+  # end
 
   def new
     @artist = Artist.new
